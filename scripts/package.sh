@@ -22,6 +22,7 @@ xcodebuild \
   -scheme MouseTools \
   -configuration "$CONFIG" \
   -derivedDataPath build \
+  -destination 'generic/platform=macOS' \
   DEVELOPMENT_TEAM="$TEAM_ID" \
   CODE_SIGN_STYLE=Automatic \
   CODE_SIGN_IDENTITY="Apple Development" \
