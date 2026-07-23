@@ -21,6 +21,7 @@ VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_
 [ -n "$OUT_DMG" ] || OUT_DMG="${STEM}-${VERSION}.dmg"
 
 TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT   # 无论成功或失败都清理临时 staging,避免残留 appex 副本
 STAGING="$TMP_DIR/staging"
 mkdir -p "$STAGING"
 
