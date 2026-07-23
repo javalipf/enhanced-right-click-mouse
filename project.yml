@@ -1,0 +1,84 @@
+name: MouseTools
+options:
+  bundleIdPrefix: com.mackli.mousetools
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+  configs:
+    Release:
+      # 分发必需:Hardened Runtime 是 Apple 公证(notarization)的前置条件。
+      ENABLE_HARDENED_RUNTIME: YES
+      DEAD_CODE_STRIPPING: YES
+
+targets:
+  MouseTools:
+    type: application
+    platform: macOS
+    sources:
+      - path: MouseTools
+        excludes:
+          - "Resources/**"
+      - path: MouseTools/Resources/Assets.xcassets
+      - path: Shared
+    info:
+      path: MouseTools/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: 鼠标工具
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSApplicationCategoryType: public.app-category.utilities
+        # 作为菜单栏(App)类应用运行:无 Dock 图标、不在右键任务时弹出主窗口;
+        # 设置窗口仅通过菜单栏「打开设置」唤起。
+        LSUIElement: true
+        CFBundleURLTypes:
+          - CFBundleURLName: com.mackli.mousetools
+            CFBundleURLSchemes:
+              - mousetools
+        NSAppleEventsUsageDescription: 鼠标工具需要控制终端 / iTerm2 以在所选目录打开新窗口。
+    entitlements:
+      path: MouseTools/Resources/MouseTools.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mackli.mousetools
+        PRODUCT_NAME: MouseTools
+        ENABLE_APP_SANDBOX: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: FinderSyncExt
+        embed: true
+      - sdk: FinderSync.framework
+
+  FinderSyncExt:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: FinderSyncExt
+        excludes:
+          - "Resources/**"
+      - path: Shared
+    info:
+      path: FinderSyncExt/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: 鼠标工具扩展
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.FinderSync
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FinderSyncExt
+    entitlements:
+      path: FinderSyncExt/Resources/FinderSyncExt.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mackli.mousetools.finderext
+        PRODUCT_NAME: FinderSyncExt
+        ENABLE_APP_SANDBOX: YES
+    dependencies:
+      - sdk: FinderSync.framework
